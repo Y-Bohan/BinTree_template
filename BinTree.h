@@ -19,6 +19,7 @@ public:
 		m_leftchild = NULL;
 		m_rightchild = NULL;
 	}
+	bool InitBinBode(T*& arry,char pose);		//使用前序遍历输出的初始序列初始化二叉结点
 	BinNode* searchNode(int id);		//再子树中搜索编号为id的结点	
 	bool preOrderTraverse();		//前序遍历
 	bool inOrderTraverse();			//中序遍历
@@ -48,6 +49,7 @@ public:
 		cout << "**********~BinTree*******" << endl;
 		clean();
 	}
+	void InitBinTree(T* arry);		//使用前序遍历输出的初始序列构造一棵树
 	bool insertRoot(BinNode<T> node);		//插入根结点
 	bool insertChild(int id, BinNode<T> node,char pose);		//插入孩子结点
 	BinNode<T>* searchTree(int id);		//搜索树中编号为id的结点
@@ -63,6 +65,32 @@ private:
 };
 
 /*******************二叉树的成员函数定义*******************************/
+
+template <class T>
+void BinTree<T>::InitBinTree(T* arry)
+{
+	if (root != NULL)		//二叉树已经存在
+		return;
+	else
+	{
+		if (!(*arry))		//序列为空
+			return;
+		root = new BinNode<T>;
+		root->m_id = 0;
+		root->m_data = *arry;
+		size++;
+		root->m_parent = NULL;
+		root->m_leftchild = new BinNode<T>;
+		root->m_leftchild->m_parent = root;
+		root->m_rightchild = new BinNode<T>;
+		root->m_rightchild->m_parent = root;
+		T*& p = arry;				//由于InitBinBode函数中需要对指针的指向改变，所以传入指针的引用，这样指针指向改变才能使函数外部的指向一起改变
+		p++;
+		root->m_leftchild->InitBinBode(p, 'L');
+		root->m_rightchild->InitBinBode(p, 'R');
+	}
+}
+
 template <class T>
 bool BinTree<T>::insertRoot(BinNode<T> node)
 {
@@ -197,6 +225,59 @@ void BinTree<T>::clean()
 
 
 /*****************二叉树结点类的成员函数定义*********************************************/
+
+template <class T>
+bool BinNode<T>::InitBinBode(T*& arry,char pose)
+{
+	if (!(*arry))		//已经到序列末尾，结束
+	{
+		if (this->m_parent->m_leftchild == this)
+		{
+			this->m_parent->m_leftchild = NULL;
+		}
+		if (this->m_parent->m_rightchild == this)
+		{
+			this->m_parent->m_rightchild = NULL;
+		}
+		delete this;
+		return true;
+	}
+	if (*arry == '#')				//#表示该位置为空，释放其父节点为其开辟的空间
+	{
+		arry++;
+		if (this->m_parent->m_leftchild == this)
+		{
+			this->m_parent->m_leftchild = NULL;
+		}
+		if (this->m_parent->m_rightchild == this)
+		{
+			this->m_parent->m_rightchild = NULL;
+		}
+		delete this;
+		return true;
+	}
+	else		
+	{
+		this->m_data = *arry;
+		if (pose == 'L')
+		{
+			this->m_id = this->m_parent->m_id * 2 + 1;
+		}
+		else
+		{
+			this->m_id = this->m_parent->m_id * 2 + 2;
+		}
+		arry++;
+		this->m_leftchild = new BinNode<T>;
+		this->m_leftchild->m_parent = this;
+		this->m_rightchild = new BinNode<T>;
+		this->m_rightchild->m_parent = this;
+		this->m_leftchild->InitBinBode(arry,'L');
+		this->m_rightchild->InitBinBode(arry,'R');
+		return true;
+	}
+}
+
 template <class T>
 BinNode<T>* BinNode<T>::searchNode(int id)
 {
