@@ -27,5 +27,15 @@ int main()
 	tree.preOrderTree();
 	tree.inOrderTree();
 	tree.postOrderTree();
+
+	BinTree<char> tree1;			//´´½¨Ò»¿Å¿ÕÊ÷
+	char arry[] = { 'a','b','#','d','#','#','c','#','#' };
+	tree1.InitBinTree(arry);
+	tree1.preOrderTree();
+	tree1.deleteTreeNode(2);
+	tree1.preOrderTree();
+	tree1.inOrderTree();
+	tree1.postOrderTree();
+
 	return 0;
 }
